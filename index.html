@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover" />
+<title>Pulse — Habit &amp; Fitness Tracker</title>
+<meta name="description" content="Track daily habits, log workouts, and build streaks. Installable, offline-capable." />
+<meta name="theme-color" content="#0B0B14" />
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" href="icons/favicon-64.png" />
+<link rel="apple-touch-icon" href="icons/icon-192.png" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- ============ AUTH SCREEN ============ -->
+<div class="auth-screen" id="auth-screen">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M3 12h4l2-7 4 14 2-7h6" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="brand-name">Pulse</span>
+    </div>
+    <p class="auth-tagline">Small habits. Tracked daily.<br>Compounded into something real.</p>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-tab="login">Log In</button>
+      <button class="auth-tab" data-tab="register">Sign Up</button>
+    </div>
+
+    <form class="auth-form" id="login-form">
+      <label class="field">
+        <span>Email</span>
+        <input type="email" id="login-email" required autocomplete="email" />
+      </label>
+      <label class="field">
+        <span>Password</span>
+        <input type="password" id="login-password" required autocomplete="current-password" />
+      </label>
+      <button type="submit" class="btn btn-primary btn-full">Log In</button>
+      <p class="form-status" id="login-status"></p>
+    </form>
+
+    <form class="auth-form hidden" id="register-form">
+      <label class="field">
+        <span>Name</span>
+        <input type="text" id="register-name" required autocomplete="name" />
+      </label>
+      <label class="field">
+        <span>Email</span>
+        <input type="email" id="register-email" required autocomplete="email" />
+      </label>
+      <label class="field">
+        <span>Password</span>
+        <input type="password" id="register-password" required autocomplete="new-password" minlength="6" />
+      </label>
+      <button type="submit" class="btn btn-primary btn-full">Sign Up</button>
+      <p class="form-status" id="register-status"></p>
+    </form>
+  </div>
+</div>
+
+<!-- ============ APP SHELL ============ -->
+<div class="app-shell hidden" id="app-shell">
+
+  <header class="app-header">
+    <div>
+      <h1 id="greeting">Hey, there</h1>
+      <p class="app-date" id="app-date"></p>
+    </div>
+    <button class="icon-btn" id="install-btn" title="Install app" aria-label="Install app">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 19h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </header>
+
+  <main class="app-main">
+
+    <!-- ============ TODAY ============ -->
+    <section class="screen active" id="screen-today">
+      <div class="ring-wrap">
+        <svg class="ring-svg" viewBox="0 0 160 160">
+          <circle class="ring-track" cx="80" cy="80" r="70" />
+          <circle class="ring-fill" id="ring-fill" cx="80" cy="80" r="70" />
+        </svg>
+        <div class="ring-center">
+          <span class="ring-value" id="ring-value">0/0</span>
+          <span class="ring-label">TODAY</span>
+        </div>
+      </div>
+
+      <h2 class="section-title">Today's Habits</h2>
+      <div class="habit-list" id="today-habit-list"></div>
+    </section>
+
+    <!-- ============ HABITS ============ -->
+    <section class="screen" id="screen-habits">
+      <div class="screen-head">
+        <h2 class="section-title">Your Habits</h2>
+        <button class="btn btn-gradient btn-sm" id="open-add-habit">+ Add</button>
+      </div>
+      <div class="habit-list" id="habits-manage-list"></div>
+    </section>
+
+    <!-- ============ WORKOUTS ============ -->
+    <section class="screen" id="screen-workouts">
+      <div class="screen-head">
+        <h2 class="section-title">Workout Log</h2>
+        <button class="btn btn-gradient btn-sm" id="open-add-workout">+ Log</button>
+      </div>
+      <div class="workout-list" id="workout-list"></div>
+    </section>
+
+    <!-- ============ STATS ============ -->
+    <section class="screen" id="screen-stats">
+      <h2 class="section-title">Progress</h2>
+      <div class="stat-grid" id="stat-grid"></div>
+
+      <h3 class="section-subtitle">Last 7 Days</h3>
+      <div class="bar-chart" id="bar-chart"></div>
+
+      <h3 class="section-subtitle">Streaks by Habit</h3>
+      <div class="streak-list" id="streak-list"></div>
+    </section>
+
+    <!-- ============ PROFILE ============ -->
+    <section class="screen" id="screen-profile">
+      <div class="profile-card">
+        <div class="avatar" id="profile-avatar">?</div>
+        <p class="profile-name" id="profile-name"></p>
+        <p class="profile-email" id="profile-email"></p>
+        <button class="btn btn-outline btn-full" id="profile-install-btn">Install App</button>
+        <button class="btn btn-danger-outline btn-full" id="logout-btn">Log Out</button>
+        <p class="profile-footnote">Pulse — offline-capable PWA. Data stored locally on this server.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <nav class="bottom-nav" aria-label="App navigation">
+    <button class="nav-btn active" data-screen="today">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 12l1.5-1.5M4 12l8-8 8 8M4 12v8a1 1 0 001 1h4v-6h6v6h4a1 1 0 001-1v-8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Today</span>
+    </button>
+    <button class="nav-btn" data-screen="habits">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Habits</span>
+    </button>
+    <button class="nav-btn" data-screen="workouts">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M6.5 6.5l11 11M4 8l2-2 3 3-2 2-3-3zm10 10l2-2 3 3-2 2-3-3zM8.5 4.5L6 7m11 11l2.5-2.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Workouts</span>
+    </button>
+    <button class="nav-btn" data-screen="stats">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 20V10m6 10V4m6 16v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Stats</span>
+    </button>
+    <button class="nav-btn" data-screen="profile">
+      <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <span>Profile</span>
+    </button>
+  </nav>
+</div>
+
+<!-- ============ MODALS ============ -->
+<div class="modal-backdrop hidden" id="modal-backdrop">
+
+  <div class="modal hidden" id="modal-add-habit">
+    <div class="modal-head">
+      <h3>New Habit</h3>
+      <button class="icon-btn" data-close-modal>&times;</button>
+    </div>
+    <form id="add-habit-form">
+      <label class="field">
+        <span>Habit name</span>
+        <input type="text" id="habit-name" placeholder="e.g. Drink 2L water" required />
+      </label>
+      <div class="field">
+        <span>Emoji</span>
+        <div class="emoji-grid" id="emoji-grid">
+          <button type="button" class="emoji-opt selected" data-emoji="💧">💧</button>
+          <button type="button" class="emoji-opt" data-emoji="🏃">🏃</button>
+          <button type="button" class="emoji-opt" data-emoji="📚">📚</button>
+          <button type="button" class="emoji-opt" data-emoji="🧘">🧘</button>
+          <button type="button" class="emoji-opt" data-emoji="😴">😴</button>
+          <button type="button" class="emoji-opt" data-emoji="🥗">🥗</button>
+          <button type="button" class="emoji-opt" data-emoji="💪">💪</button>
+          <button type="button" class="emoji-opt" data-emoji="☀️">☀️</button>
+          <button type="button" class="emoji-opt" data-emoji="🚶">🚶</button>
+          <button type="button" class="emoji-opt" data-emoji="🧠">🧠</button>
+          <button type="button" class="emoji-opt" data-emoji="🎯">🎯</button>
+          <button type="button" class="emoji-opt" data-emoji="✅">✅</button>
+        </div>
+      </div>
+      <div class="field">
+        <span>Color</span>
+        <div class="color-grid" id="color-grid">
+          <button type="button" class="color-opt selected" data-color="violet" style="--dot: #8B5CF6"></button>
+          <button type="button" class="color-opt" data-color="cyan" style="--dot: #22D3EE"></button>
+          <button type="button" class="color-opt" data-color="mint" style="--dot: #34D399"></button>
+          <button type="button" class="color-opt" data-color="orange" style="--dot: #FB923C"></button>
+          <button type="button" class="color-opt" data-color="pink" style="--dot: #F472B6"></button>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-gradient btn-full">Create Habit</button>
+      <p class="form-status" id="add-habit-status"></p>
+    </form>
+  </div>
+
+  <div class="modal hidden" id="modal-add-workout">
+    <div class="modal-head">
+      <h3>Log Workout</h3>
+      <button class="icon-btn" data-close-modal>&times;</button>
+    </div>
+    <form id="add-workout-form">
+      <label class="field">
+        <span>Type</span>
+        <input type="text" id="workout-type" placeholder="e.g. Running, Push Day, Yoga" required />
+      </label>
+      <div class="field-row">
+        <label class="field">
+          <span>Duration (min)</span>
+          <input type="number" id="workout-duration" min="1" required />
+        </label>
+        <label class="field">
+          <span>Calories (optional)</span>
+          <input type="number" id="workout-calories" min="0" />
+        </label>
+      </div>
+      <label class="field">
+        <span>Date</span>
+        <input type="date" id="workout-date" />
+      </label>
+      <label class="field">
+        <span>Notes (optional)</span>
+        <textarea id="workout-notes" rows="3"></textarea>
+      </label>
+      <button type="submit" class="btn btn-gradient btn-full">Save Workout</button>
+      <p class="form-status" id="add-workout-status"></p>
+    </form>
+  </div>
+
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
